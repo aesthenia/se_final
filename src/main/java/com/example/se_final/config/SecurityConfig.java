@@ -2,6 +2,7 @@ package com.example.se_final.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,7 +22,16 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/api/movies/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/movies/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/actors/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/movie/**").permitAll()
+
+                        .requestMatchers(HttpMethod.POST, "/api/movies/**", "/api/actors/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/movies/**", "/api/actors/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/movies/**", "/api/actors/**").hasRole("ADMIN")
+
+                        .requestMatchers(HttpMethod.POST, "/api/reviews/**").authenticated()
+
                         .anyRequest().authenticated()
                 )
                 .httpBasic(withDefaults());
